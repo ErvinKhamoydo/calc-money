@@ -53,7 +53,7 @@ export default class App extends Component {
 						<Total/>
 						<History transactions={this.state.transactions}/>
 						<Operation 
-							addTransation={this.addTransaction}
+							addTransaction={this.addTransaction}
 							addAmount={this.addAmount}
 							addDescription={this.addDescription}
 							description={this.state.description}
