@@ -7,14 +7,15 @@ export default class App extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			transactions: [],
-			description: '',
-			amount: '',
-			total: 0,
-			income: 0,
-			expense: 0	
-		}
+		this.state = JSON.parse(localStorage.getItem('calcMoney')) || 
+			{
+				transactions: [],
+				description: '',
+				amount: '',
+				total: 0,
+				income: 0,
+				expense: `-${0}`	
+			}
 	}
 
 	addTransaction = (add) => {
@@ -27,9 +28,7 @@ export default class App extends Component {
 			}
 		];
 
-
 		let newTotal, newIncome, newExpense;
-		console.log(this.state.income);
 
 		if (add) {
 			newTotal = +this.state.total + +this.state.amount;
@@ -44,27 +43,56 @@ export default class App extends Component {
 		this.setState({
 			total: newTotal,
 			income: newIncome,
-			expense: (newExpense <= 0) ? newExpense : `-${newExpense}`,
+			expense: (newExpense >= 0) ? `-${newExpense}` : newExpense,
 			transactions,
 			description: '',
 			amount: ''
-		})
-
-		
+		});
 	}
 
 	addAmount = (elem) => {
 		this.setState({
 			amount: elem.target.value
-		})
+		});
 	}
 
 	addDescription = (elem) => {
-		this.setState({description: elem.target.value})
+		this.setState({description: elem.target.value});
+	}
+
+	delTransaction = (key) => {
+		const transactions = this.state.transactions.filter(item => item.id !== key);
+
+		this.setState({transactions});
+
+		const transactionsOk = this.state.transactions.filter(item => item.id === key);
+		
+		transactionsOk.forEach(elem => {
+			if (elem.add) {
+				this.setState({
+					total: +this.state.total - +elem.amount,
+					income: +this.state.income - +elem.amount,
+				})
+			} else {
+				this.setState({
+					total: +this.state.total + +elem.amount,
+					expense: (+this.state.expense + +elem.amount >= 0) ?
+						`-${+this.state.expense + +elem.amount }` :
+						+this.state.expense + +elem.amount,
+				})
+			}
+		});
+	}
+
+	addStorage() {
+		localStorage.setItem('calcMoney', JSON.stringify(this.state));
+	}
+
+	componentDidUpdate() {
+		this.addStorage();
 	}
 
 	render() {
-		console.log(this.state.total);
 		return (
 			<>
 				<header>
@@ -78,8 +106,11 @@ export default class App extends Component {
 							total={this.state.total}
 							income={this.state.income}
 							expense={this.state.expense}
-							/>
-						<History transactions={this.state.transactions}/>
+						/>
+						<History 
+							transactions={this.state.transactions}
+							delTransaction={this.delTransaction}
+						/>
 						<Operation 
 							addTransaction={this.addTransaction}
 							addAmount={this.addAmount}
