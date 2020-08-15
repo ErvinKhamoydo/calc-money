@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Operation = ({addTransaction, addDescription, addAmount, description, amount}) => {
+const Operation = ({addTransaction, addDescription, addAmount, addTotal, description, amount}) => {
     return(
         <section className="operation">
             <h3>Новая операция</h3>
@@ -31,7 +31,7 @@ const Operation = ({addTransaction, addDescription, addAmount, description, amou
                             >РАСХОД
                     </button>
                     <button
-                        onClick={() => addTransaction(true)} 
+                        onClick={() => addTransaction(true)}
                         type="button" 
                         className="operation__btn operation__btn-add"
                             >ДОХОД

@@ -10,8 +10,10 @@ export default class App extends Component {
 		this.state = {
 			transactions: [],
 			description: '',
-			amount: ''
-			
+			amount: '',
+			total: 0,
+			income: 0,
+			expense: 0	
 		}
 	}
 
@@ -25,15 +27,36 @@ export default class App extends Component {
 			}
 		];
 
+
+		let newTotal, newIncome, newExpense;
+		console.log(this.state.income);
+
+		if (add) {
+			newTotal = +this.state.total + +this.state.amount;
+			newIncome = +this.state.income + +this.state.amount;
+			newExpense = +this.state.expense;
+		} else {
+			newTotal = +this.state.total - +this.state.amount;
+			newExpense = +this.state.expense - +this.state.amount;
+			newIncome = +this.state.income;
+		}
+
 		this.setState({
+			total: newTotal,
+			income: newIncome,
+			expense: (newExpense <= 0) ? newExpense : `-${newExpense}`,
 			transactions,
 			description: '',
-			amount: '',
+			amount: ''
 		})
+
+		
 	}
 
 	addAmount = (elem) => {
-		this.setState({amount: elem.target.value})
+		this.setState({
+			amount: elem.target.value
+		})
 	}
 
 	addDescription = (elem) => {
@@ -41,6 +64,7 @@ export default class App extends Component {
 	}
 
 	render() {
+		console.log(this.state.total);
 		return (
 			<>
 				<header>
@@ -50,14 +74,19 @@ export default class App extends Component {
 
 				<main>
 					<div className="container">
-						<Total/>
+						<Total 
+							total={this.state.total}
+							income={this.state.income}
+							expense={this.state.expense}
+							/>
 						<History transactions={this.state.transactions}/>
 						<Operation 
 							addTransaction={this.addTransaction}
 							addAmount={this.addAmount}
 							addDescription={this.addDescription}
 							description={this.state.description}
-							amount={this.state.amount}	
+							amount={this.state.amount}
+							addTotal={this.addTotal}	
 						/>
 					</div>
 				</main>
